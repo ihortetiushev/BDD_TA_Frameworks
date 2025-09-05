@@ -48,7 +48,6 @@ public class FinalTaskTest {
         if (!DRIVERS.contains(driver)) {
             DRIVERS.add(driver);
             driver.manage().window().maximize();
-
         }
     }
 
@@ -75,7 +74,6 @@ public class FinalTaskTest {
     @ParameterizedTest
     @MethodSource("getWebDriverParams")
     protected void useCase1(WebDriver driver) {
-
         addDriverIfAbsent(driver);
         log.log(Level.INFO, "Executing useCase1");
         driver.get(TESTED_URL);
@@ -175,10 +173,4 @@ public class FinalTaskTest {
                 titleText, equalTo("Swag Labs"));
         driver.quit();
     }
-    /*@ParameterizedTest
-    @MethodSource("getWebDriverParams")
-    @AfterAll
-    public static void afterAll() {
-        drivers.forEach(WebDriver::quit);
-    }*/
 }

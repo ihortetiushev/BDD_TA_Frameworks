@@ -1,19 +1,43 @@
 package com.epam.bdd_test;
 
 import io.cucumber.java.AfterAll;
-import io.cucumber.java.en.*;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.junit.jupiter.api.Assertions;
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+
 import java.lang.reflect.InvocationTargetException;
 import java.time.Duration;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StepDefinitions {
     private static final WebDriver driver = getWebDriver("driver1");
     private static final Logger log = Logger.getLogger(StepDefinitions.class.getName());
+
+    @AfterAll
+    public static void closingWebBrowsers() {
+        driver.quit();
+    }
+
+    @SuppressWarnings("unchecked")
+    private static WebDriver getWebDriver(String key) {
+        Class<WebDriver> clazz = null;
+        try {
+            clazz = (Class<WebDriver>) Class.forName(PropertyReader.getProperties(key, "org.openqa.selenium.chrome.ChromeDriver"));
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void clearControlText(String text, WebElement element, WebDriver driver) {
         log.log(Level.INFO, "clearControlText " + "element: " + element + "element length: " + text.length());
         Actions actions = new Actions(driver);
@@ -33,15 +57,17 @@ public class StepDefinitions {
                 .build()
                 .perform();
     }
-    //For UC-1
+
+
     @Given("I am on the SauceDemo login page")
     public void openLoginPage() {
+        //For UC-1
         log.log(Level.INFO, "Opening SauceDemo login page");
         driver.manage().window().maximize();
         driver.get(FinalTaskTest.TESTED_URL);
     }
 
-    @When("^I enter login \"([^\"]*)\" and password \"([^\"]*)\"$")
+    @When("Anonymous user logging in with '(.+)' user name and '(.+)' password")
     public void enterCredentials(String loginProperty, String passwordProperty) {
         log.log(Level.INFO, "Entering credentials");
         String login = PropertyReader.getProperties(loginProperty, null);
@@ -53,14 +79,14 @@ public class StepDefinitions {
         passwordPaste.sendKeys(password);
     }
 
-    @When("I click the login button")
+    @When("Anonymous user clicks on login button")
     public void clickLoginButton() {
         log.log(Level.INFO, "Clicking login button");
         WebElement loginBtn = driver.findElement(By.xpath(FinalTaskTest.LOGIN_BUTTON_XPATH));
         loginBtn.click();
     }
 
-    @Then("^I should see an error message containing \"([^\"]*)\"$")
+    @Then("Anonymous user should see an error message containing \"([^\"]*)\"$")
     public void checkErrorMessage(String expectedMessage) {
         log.log(Level.INFO, "Checking the error message");
         new WebDriverWait(driver, Duration.ofSeconds(5)).until(
@@ -73,9 +99,9 @@ public class StepDefinitions {
                 "Expected error message not displayed! Expected error: " + expectedMessage + ". Actual error message: " + actualMessage);
     }
 
-    //For UC-2
-    @When("I clear the {string} field")
+    @When("Anonymous user clears the {string} field")
     public void iClearOneField(String field) {
+        //For UC-2
         if ("login".equalsIgnoreCase(field)) {
             WebElement loginField = driver.findElement(By.xpath(FinalTaskTest.LOGIN_PASTE_XPATH));
             String loginStr = loginField.getText();
@@ -89,9 +115,10 @@ public class StepDefinitions {
             clearControlText(passwordStr, passwordField, driver);
         }
     }
-    //For UC-3
-    @Then("I should see validation the title {string} in the dashboard")
+
+    @Then("Logged user should see validation the title \"Swag Labs\" in the dashboard")
     public void checkTitle(String expectedTitle) {
+        //For UC-3
         log.log(Level.INFO, "Checking the expected title");
 
         WebElement title = driver.findElement(By.xpath(FinalTaskTest.TITLE_XPATH));
@@ -100,21 +127,5 @@ public class StepDefinitions {
         log.log(Level.INFO, "Title: " + actualTitle);
         Assertions.assertTrue(actualTitle.contains(expectedTitle),
                 "The title is different or it is not displayed!");
-    }
-    @AfterAll
-    public static void closingWebBrowsers() {
-        driver.quit();
-    }
-
-    @SuppressWarnings("unchecked")
-    private static WebDriver getWebDriver(String key) {
-        Class<WebDriver> clazz = null;
-        try {
-            clazz = (Class<WebDriver>) Class.forName(PropertyReader.getProperties(key, "org.openqa.selenium.chrome.ChromeDriver"));
-            return clazz.getDeclaredConstructor().newInstance();
-        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
-            throw new RuntimeException(e);
-        }
-
     }
 }

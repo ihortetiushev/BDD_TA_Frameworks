@@ -7,6 +7,7 @@ import java.util.Properties;
 
 public class PropertyReader {
     private static final Properties properties = new Properties();
+
     static {
         try (InputStream input = PropertyReader.class.getClassLoader().getResourceAsStream("test_prop.properties")) {
             if (input == null) {
@@ -19,6 +20,7 @@ public class PropertyReader {
             e.printStackTrace();
         }
     }
+
     public static String getProperties(String key, String defaultValue) {
         return properties.getProperty(key, defaultValue);
     }

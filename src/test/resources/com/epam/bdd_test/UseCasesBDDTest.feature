@@ -3,30 +3,24 @@ Feature: Testing Login Form on SauceDemo Website
   Background:
   Given I am on the SauceDemo login page
 
-  Scenario: UC-1 Login attempt with empty credentials
-    When I enter login "propertiesLogin1" and password "propertiesPassword1"
-    And I clear the "login" field
-    And I clear the "password" field
-    And I click the login button
-    Then I should see an error message containing "Username is required"
+  Scenario: UC-1 User should NOT be able to login with empty credentials
+    When Anonymous user logging in with 'propertiesLogin1' user name and 'propertiesPassword1' password
+    And Anonymous user clears the "login" field
+    And Anonymous user clears the "password" field
+    And Anonymous user clicks on login button
+    Then Anonymous user should see an error message containing "Username is required"
 
-  Scenario: UC-2 Login attempt with missing password
-    When I enter login "propertiesLogin2" and password "propertiesPassword2"
-    And I clear the "password" field
-    And I click the login button
-    Then I should see an error message containing "Password is required"
+  Scenario: UC-2 User should NOT be able to login without password
+    When Anonymous user logging in with 'propertiesLogin2' user name and 'propertiesPassword2' password
+    And Anonymous user clears the "password" field
+    And Anonymous user clicks on login button
+    Then Anonymous user should see an error message containing "Password is required"
 
-  #Scenario: UC-3 Test Login form with credentials by passing Username & Password
-   # When I enter login "propertiesLogin3" and password "propertiesPassword3"
-    #And I click the login button
-    #Then I should see validation the title "Swag Labs" in the dashboard
-
-
-  Scenario Outline: UC-3 Successful login with valid credentials
-    When I enter login "<username>" and password "<password>"
-    And I click the login button
-    Then I should see validation the title "Swag Labs" in the dashboard
+  Scenario Outline: UC-3 "<userName>" user should login with valid credentials
+    When Anonymous user logging in with '<userName>' user name and '<password>' password
+    And Anonymous user clicks on login button
+    Then Logged user should see validation the title "Swag Labs" in the dashboard
 
     Examples:
-      | username           | password           |
+      | userName           | password           |
       | propertiesLogin3   | propertiesPassword3|
